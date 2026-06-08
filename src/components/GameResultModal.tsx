@@ -1,17 +1,21 @@
-import React from 'react';
-import { GameResult } from '../types/game';
+import React, { useState } from 'react';
+import { GameResult, BattleLog } from '../types/game';
+import { AdventureReplay } from './AdventureReplay';
 
 interface GameResultModalProps {
   result: GameResult;
+  logs: BattleLog[];
   onClose: () => void;
   onRetry: () => void;
 }
 
-export const GameResultModal: React.FC<GameResultModalProps> = ({ result, onClose, onRetry }) => {
+export const GameResultModal: React.FC<GameResultModalProps> = ({ result, logs, onClose, onRetry }) => {
+  const [activeTab, setActiveTab] = useState<'result' | 'replay'>('result');
+
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-gray-800 rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl border border-gray-700">
-        <div className="text-center mb-6">
+      <div className="bg-gray-800 rounded-xl p-8 max-w-lg w-full mx-4 shadow-2xl border border-gray-700 max-h-[90vh] flex flex-col">
+        <div className="text-center mb-4">
           {result.victory ? (
             <>
               <div className="text-6xl mb-4">🏆</div>
@@ -27,74 +31,107 @@ export const GameResultModal: React.FC<GameResultModalProps> = ({ result, onClos
           )}
         </div>
 
-        <div className="space-y-3 mb-6">
-          <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
-            <span className="text-gray-300 flex items-center gap-2">
-              <span>💰</span> 获得金币
-            </span>
-            <span className="text-yellow-400 font-bold text-lg">{result.totalGold}</span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
-            <span className="text-gray-300 flex items-center gap-2">
-              <span>✨</span> 获得经验
-            </span>
-            <span className="text-purple-400 font-bold text-lg">{result.totalExp}</span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
-            <span className="text-gray-300 flex items-center gap-2">
-              <span>👾</span> 击杀怪物
-            </span>
-            <span className="text-red-400 font-bold text-lg">{result.monstersKilled}</span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
-            <span className="text-gray-300 flex items-center gap-2">
-              <span>📦</span> 发现宝箱
-            </span>
-            <span className="text-amber-400 font-bold text-lg">{result.treasuresFound}</span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
-            <span className="text-gray-300 flex items-center gap-2">
-              <span>⚠️</span> 触发陷阱
-            </span>
-            <span className="text-orange-400 font-bold text-lg">{result.trapsTriggered}</span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
-            <span className="text-gray-300 flex items-center gap-2">
-              <span>👣</span> 行走步数
-            </span>
-            <span className="text-blue-400 font-bold text-lg">{result.steps}</span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
-            <span className="text-gray-300 flex items-center gap-2">
-              <span>❤️</span> 剩余生命
-            </span>
-            <span className="text-green-400 font-bold text-lg">
-              {result.heroFinalHp} / {result.heroMaxHp}
-            </span>
-          </div>
+        <div className="flex border-b border-gray-600 mb-4">
+          <button
+            onClick={() => setActiveTab('result')}
+            className={`flex-1 py-2 text-center font-bold transition-colors ${
+              activeTab === 'result'
+                ? 'text-blue-400 border-b-2 border-blue-400'
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+          >
+            📊 战绩总览
+          </button>
+          <button
+            onClick={() => setActiveTab('replay')}
+            className={`flex-1 py-2 text-center font-bold transition-colors ${
+              activeTab === 'replay'
+                ? 'text-blue-400 border-b-2 border-blue-400'
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+          >
+            🎬 冒险回放
+          </button>
         </div>
 
-        {!result.victory && (
-          <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-4 mb-6">
-            <h3 className="text-blue-400 font-bold mb-2">💡 改进建议</h3>
-            <ul className="text-sm text-gray-300 space-y-1">
-              {result.trapsTriggered > 2 && (
-                <li>• 陷阱过多，考虑减少或分散布置</li>
-              )}
-              {result.monstersKilled === 0 && result.steps > 0 && (
-                <li>• 可以增加一些怪物增加挑战性</li>
-              )}
-              {result.heroFinalHp === 0 && result.monstersKilled > 0 && (
-                <li>• 怪物太强了，考虑削弱或减少数量</li>
-              )}
-              {result.steps < 5 && result.victory && (
-                <li>• 地牢太简单，路径太短</li>
-              )}
-            </ul>
-          </div>
-        )}
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          {activeTab === 'result' ? (
+            <>
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                  <span className="text-gray-300 flex items-center gap-2">
+                    <span>💰</span> 获得金币
+                  </span>
+                  <span className="text-yellow-400 font-bold text-lg">{result.totalGold}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                  <span className="text-gray-300 flex items-center gap-2">
+                    <span>✨</span> 获得经验
+                  </span>
+                  <span className="text-purple-400 font-bold text-lg">{result.totalExp}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                  <span className="text-gray-300 flex items-center gap-2">
+                    <span>👾</span> 击杀怪物
+                  </span>
+                  <span className="text-red-400 font-bold text-lg">{result.monstersKilled}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                  <span className="text-gray-300 flex items-center gap-2">
+                    <span>📦</span> 发现宝箱
+                  </span>
+                  <span className="text-amber-400 font-bold text-lg">{result.treasuresFound}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                  <span className="text-gray-300 flex items-center gap-2">
+                    <span>⚠️</span> 触发陷阱
+                  </span>
+                  <span className="text-orange-400 font-bold text-lg">{result.trapsTriggered}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                  <span className="text-gray-300 flex items-center gap-2">
+                    <span>👣</span> 行走步数
+                  </span>
+                  <span className="text-blue-400 font-bold text-lg">{result.steps}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
+                  <span className="text-gray-300 flex items-center gap-2">
+                    <span>❤️</span> 剩余生命
+                  </span>
+                  <span className="text-green-400 font-bold text-lg">
+                    {result.heroFinalHp} / {result.heroMaxHp}
+                  </span>
+                </div>
+              </div>
 
-        <div className="flex gap-3">
+              {!result.victory && (
+                <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-4 mb-4">
+                  <h3 className="text-blue-400 font-bold mb-2">💡 改进建议</h3>
+                  <ul className="text-sm text-gray-300 space-y-1">
+                    {result.trapsTriggered > 2 && (
+                      <li>• 陷阱过多，考虑减少或分散布置</li>
+                    )}
+                    {result.monstersKilled === 0 && result.steps > 0 && (
+                      <li>• 可以增加一些怪物增加挑战性</li>
+                    )}
+                    {result.heroFinalHp === 0 && result.monstersKilled > 0 && (
+                      <li>• 怪物太强了，考虑削弱或减少数量</li>
+                    )}
+                    {result.steps < 5 && result.victory && (
+                      <li>• 地牢太简单，路径太短</li>
+                    )}
+                  </ul>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="h-[400px]">
+              <AdventureReplay logs={logs} />
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3 mt-4 pt-4 border-t border-gray-700">
           <button
             onClick={onRetry}
             className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors"

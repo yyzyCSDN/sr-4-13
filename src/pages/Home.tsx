@@ -297,6 +297,7 @@ export default function Home() {
       {gameState?.isFinished && gameState.result && (
         <GameResultModal
           result={gameState.result}
+          logs={gameState.logs}
           onClose={handleBackToEditor}
           onRetry={handleRetry}
         />
