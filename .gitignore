@@ -1,0 +1,62 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+dist-ssr
+build
+coverage
+
+# Environment files
+.env
+.env.*
+!.env.example
+*.local
+
+# Local tool state and caches
+.trae/
+.cache/
+.eslintcache
+.parcel-cache/
+.sass-cache/
+.turbo/
+.vite/
+tmp/
+temp/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Large packaged/binary assets
+*.7z
+*.bz2
+*.gz
+*.iso
+*.rar
+*.tar
+*.tgz
+*.xz
+*.zip
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.psd
+*.ai
